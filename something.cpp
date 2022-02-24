@@ -15,7 +15,7 @@ struct Project {
     int B; //bestBefore
     vector <Role> roles;
     // helper
-    map<string, int> levels;
+    set<string> skills;
 };
 
 struct Contributor {
@@ -101,13 +101,16 @@ Assignment execute(Task& task) {
             vector <int> contributors;
             set<int> contributorsSet;
             bool projCanBeDone = true;
-            set<string> mentoredRoles;
+            map<string, int> mentoredRoles;
 
-            for (auto& x : project.roles) {
+            for (const auto& x : project.roles) {
                 bool assigned = false;
                 int start = x.level;
-                if (mentoredRoles.count(x.skill)) {
-                    --start;
+                auto mentor = mentoredRoles.find(x.skill);
+                if (mentor != mentoredRoles.end()) {
+                    if (start <= mentor->second) {
+                        --start;
+                    }
                 }
                 auto begin = skillLevelContributorId[x.skill].lower_bound(start);
                 auto end = skillLevelContributorId[x.skill].end();
@@ -121,11 +124,14 @@ Assignment execute(Task& task) {
                         contributorsSet.insert(contributorId);
                         auto contrIt = contributorsAvailable.find({contributorId});
                         for (auto& lr : contrIt->skill) {
-                            auto it2 = project.levels.find(lr.first);
-                            if (it2 != project.levels.end()) {
-                                if (lr.second >= it2->second) {
-                                    mentoredRoles.insert(lr.first);
+                            auto it2 = project.skills.find(lr.first);
+                            if (it2 != project.skills.end()) {
+                                auto iter = mentoredRoles.find(lr.first);
+                                int val = lr.second;
+                                if (iter != mentoredRoles.end()) {
+                                    val = max(val, iter->second);
                                 }
+                                mentoredRoles[lr.first] = val;
                             }
                         }
                         assigned = true;
@@ -212,7 +218,7 @@ Task readTask(string taskName) {
         project.roles.resize(R);
         for (auto& role : project.roles) {
             cin >> role.skill >> role.level;
-            project.levels[role.skill] = role.level;
+            project.skills.insert(role.skill);
         }
     }
     long long sum = 0;
