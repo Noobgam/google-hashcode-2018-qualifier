@@ -220,6 +220,9 @@ Task readTask(string taskName) {
             cin >> role.skill >> role.level;
             project.skills.insert(role.skill);
         }
+        sort(project.roles.begin(), project.roles.end(), [](const Role& lhs, const Role& rhs) {
+           return lhs.skill < rhs.skill || (lhs.skill == rhs.skill && lhs.level > rhs.level);
+        });
     }
     long long sum = 0;
     for (auto& prj : t.projects) {
