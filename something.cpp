@@ -3,6 +3,7 @@
 using namespace std;
 
 struct Role {
+    int id;
     string skill;
     int level;
 };
@@ -73,10 +74,10 @@ Assignment execute(Task& task) {
             return max(0, project.S - max(0, curTime + project.D - project.B));
         };
         sort(currentProjects.begin(), currentProjects.end(), [&](const Project& lhs, const Project& rhs) {
-//            int c1 = getCost(lhs);
-//            int c2 = getCost(rhs);
-//            return c1 < c2 || c1 == c2 && lhs.id < rhs.id;
-            return lhs.B < rhs.B;
+            int c1 = getCost(lhs);
+            int c2 = getCost(rhs);
+            return c1 < c2 || c1 == c2 && lhs.id < rhs.id;
+       //     return lhs.B < rhs.B;
         });
         map<string, map<int, set<int>>> skillLevelContributorId;
         auto&& pop_guy = [&](const Contributor& contributor) {
@@ -155,6 +156,7 @@ Assignment execute(Task& task) {
             result.assigned.push_back({});
             AssignedTask& assigned = result.assigned.back();
             assigned.projectName = project.name;
+            assigned.contributorNames.resize(contributors.size());
             for (int i = 0; i < contributors.size(); ++i) {
                 auto it = contributorsAvailable.find({contributors[i]});
                 Contributor c = *it;
@@ -164,7 +166,7 @@ Assignment execute(Task& task) {
                     c.skill[project.roles[i].skill]++;
                 }
                 guysFree[curTime + project.D].push_back(c);
-                assigned.contributorNames.push_back(c.name);
+                assigned.contributorNames[project.roles[i].id] = c.name;
             }
             projects.erase(project.id);
         }
@@ -217,12 +219,15 @@ Task readTask(string taskName) {
         int R;
         cin >> R;
         project.roles.resize(R);
+        int roleId = 0;
         for (auto& role : project.roles) {
             cin >> role.skill >> role.level;
+            role.id = roleId;
             project.skills.insert(role.skill);
+            ++roleId;
         }
         sort(project.roles.begin(), project.roles.end(), [](const Role& lhs, const Role& rhs) {
-           return lhs.skill < rhs.skill || (lhs.skill == rhs.skill && lhs.level > rhs.level);
+           return lhs.level > rhs.level || (lhs.level == rhs.level && lhs.skill < rhs.skill);
         });
     }
     long long sum = 0;
