@@ -145,7 +145,8 @@ Assignment execute(Task& task) {
             }
 
             // assign guys to task
-            AssignedTask& assigned = result.assigned.emplace_back();
+            result.assigned.push_back({});
+            AssignedTask& assigned = result.assigned.back();
             assigned.projectName = project.name;
             for (int i = 0; i < contributors.size(); ++i) {
                 auto it = contributorsAvailable.find({contributors[i]});
