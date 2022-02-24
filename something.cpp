@@ -73,9 +73,10 @@ Assignment execute(Task& task) {
             return max(0, project.S - max(0, curTime + project.D - project.B));
         };
         sort(currentProjects.begin(), currentProjects.end(), [&](const Project& lhs, const Project& rhs) {
-            int c1 = getCost(lhs);
-            int c2 = getCost(rhs);
-            return c1 < c2 || c1 == c2 && lhs.id < rhs.id;
+//            int c1 = getCost(lhs);
+//            int c2 = getCost(rhs);
+//            return c1 < c2 || c1 == c2 && lhs.id < rhs.id;
+            return lhs.B < rhs.B;
         });
         map<string, map<int, set<int>>> skillLevelContributorId;
         auto&& pop_guy = [&](const Contributor& contributor) {
