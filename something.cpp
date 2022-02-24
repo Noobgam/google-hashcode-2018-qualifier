@@ -243,8 +243,8 @@ int main() {
     //string taskName = "b_better_start_small";
     //string taskName = "c_collaboration";
     //string taskName = "d_dense_schedule";
-    //string taskName = "e_exceptional_skills";
-    string taskName = "f_find_great_mentors";
+    string taskName = "e_exceptional_skills";
+    //string taskName = "f_find_great_mentors";
     Task t = readTask(taskName);
     cerr << "Sum of projects: " << t.sum << endl;
     auto res = execute(t);
