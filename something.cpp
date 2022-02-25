@@ -14,6 +14,7 @@ struct Project {
     int D; //days
     int S; //score
     int B; //bestBefore
+    int sum;
     vector <Role> roles;
     // helper
     set<string> skills;
@@ -74,10 +75,13 @@ Assignment execute(Task& task) {
             return max(0, project.S - max(0, curTime + project.D - project.B));
         };
         sort(currentProjects.begin(), currentProjects.end(), [&](const Project& lhs, const Project& rhs) {
-            int c1 = getCost(lhs);
-            int c2 = getCost(rhs);
-            return c1 < c2 || c1 == c2 && lhs.id < rhs.id;
-       //     return lhs.B < rhs.B;
+            // int c1 = getCost(lhs);
+            // int c2 = getCost(rhs);
+            // return c1 < c2 || c1 == c2 && lhs.id < rhs.id;
+
+           // return lhs.B < rhs.B;
+
+            return lhs.sum < rhs.sum;
         });
         map<string, map<int, set<int>>> skillLevelContributorId;
         auto&& pop_guy = [&](const Contributor& contributor) {
@@ -185,8 +189,9 @@ Assignment execute(Task& task) {
 }
 
 Task readTask(string taskName) {
-    freopen((taskName + ".in.txt").c_str(), "r", stdin);
-    freopen((taskName + ".out.txt").c_str(), "w", stdout);
+    freopen(("data/" + taskName + ".in.txt").c_str(), "r", stdin);
+    freopen(("data/" + taskName + ".out.txt").c_str(), "w", stdout);
+ 
     Task t;
     cin >> t.C >> t.P;
     t.contributors.resize(t.C);
@@ -219,12 +224,14 @@ Task readTask(string taskName) {
         int R;
         cin >> R;
         project.roles.resize(R);
+        project.sum = 0;
         int roleId = 0;
         for (auto& role : project.roles) {
             cin >> role.skill >> role.level;
             role.id = roleId;
             project.skills.insert(role.skill);
             ++roleId;
+            project.sum = max(project.sum, role.level);
         }
         sort(project.roles.begin(), project.roles.end(), [](const Role& lhs, const Role& rhs) {
            return lhs.level > rhs.level || (lhs.level == rhs.level && lhs.skill < rhs.skill);
@@ -240,11 +247,11 @@ Task readTask(string taskName) {
 
 int main() {
     //string taskName = "a_an_example";
-    //string taskName = "b_better_start_small";
-    //string taskName = "c_collaboration";
-    //string taskName = "d_dense_schedule";
-    string taskName = "e_exceptional_skills";
-    //string taskName = "f_find_great_mentors";
+    // string taskName = "b_better_start_small";
+    // string taskName = "c_collaboration";
+    string taskName = "d_dense_schedule";
+    // string taskName = "e_exceptional_skills";
+    // string taskName = "f_find_great_mentors";
     Task t = readTask(taskName);
     cerr << "Sum of projects: " << t.sum << endl;
     auto res = execute(t);
